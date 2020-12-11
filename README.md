@@ -17,4 +17,12 @@ Vagabond is a peer-to-peer social network built using the [ActivityPub](https://
 	* MaterialUI
 	* Bootstrap
 
-# //TODO
+# Timeline
+
+## Week 1
+
+* Environment set up
+* Learning objectives:
+	* SSH
+	* HTTP
+	* Basics of ActivityPub
