@@ -26,3 +26,16 @@ Vagabond is a peer-to-peer social network built using the [ActivityPub](https://
 	* SSH
 	* HTTP
 	* Basics of ActivityPub
+
+## Week 2
+
+* Read-only implementation of:
+	* Webfinger
+	* User profiles
+	* Posts
+* Basic Flask-SQLAlchemy models for:
+	* Users
+	* Posts
+* 
+
+* Front
