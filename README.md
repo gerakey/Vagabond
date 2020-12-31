@@ -15,3 +15,7 @@ Vagabond is a federated social network built using the [ActivityPub](https://www
 ## Compatability
 
 Vagabond is compatible with the [Mastodon](https://mastodon.social/about) network. 
+
+# Timeline
+
+//TODO
