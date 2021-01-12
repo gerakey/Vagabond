@@ -9,4 +9,6 @@
 
 ## Core Team
 
-???
+* Gerrad
+* Jay
+* Cameron
