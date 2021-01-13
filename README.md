@@ -1,6 +1,6 @@
 # Vagabond
 
-[Vagabond](https://www.teamvagabond.com) is a federated social network build using the ActivityPub protocol that prioritizes user privacy, security, and autonomy. Vagabond is free and open source software.  
+[Vagabond](https://www.teamvagabond.com) is a federated social network built using the ActivityPub protocol that prioritizes user privacy, security, and autonomy. Vagabond is free and open source software.  
 
 ## Developer Instructions
 
