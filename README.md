@@ -8,7 +8,9 @@ Two shell scripts are included with this repository to run via git bash on Windo
 
 *update.sh* will download the latest dependencies for both the client and server. This should be run every time you use git pull. 
 
-*build.sh* will produce a production ready version of the client and server. This script will not apply production-ready security configurations, however.   
+*build.sh* will produce a production ready version of the client and server. 
+
+*deploy.sh* will build a production ready version of the client and server and deploy it to a local apache web server. Only use this script on the VPS. 
 
 ## About
 
