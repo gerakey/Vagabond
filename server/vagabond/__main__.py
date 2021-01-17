@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_cors import CORS
-from config import VAGABOND_CONFIG
+from .config import VAGABOND_CONFIG
 
 app = Flask(__name__, static_url_path='/')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{VAGABOND_CONFIG['mysql_user']}:{VAGABOND_CONFIG['mysql_password']}@{VAGABOND_CONFIG['mysql_server']}:{VAGABOND_CONFIG['mysql_port']}/{VAGABOND_CONFIG['mysql_database']}"
@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 limiter = Limiter(app)
 cors = CORS(app)
 
-from routes import *
+from vagabond.routes import *
 
 if __name__ == '__main__':
     app.run()
