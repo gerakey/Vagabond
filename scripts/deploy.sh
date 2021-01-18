@@ -21,7 +21,7 @@ echo "
 #Auto-generated WSGI configuration
 import sys
 sys.path.insert(0, '/var/www/$USER/')
-sys.path.insert(0, '/var/www/$USER/env/lib/python3.6/site-packages')
+sys.path.insert(0, '/var/www/$USER/env/lib/python3.8/site-packages')
 from vagabond import app as application
 " > /var/www/$USER/wsgi.py 
 
