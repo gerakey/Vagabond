@@ -1,7 +1,9 @@
-from flask import make_response
-
 from vagabond.__main__ import app
+
+@app.errorhandler(404)
+def route_error_404(e):
+    return app.send_static_file('index.html')
 
 @app.route('/')
 def index():
-    return make_response('Hello, world!', 200)
+    return app.send_static_file('index.html')
