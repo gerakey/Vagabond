@@ -10,10 +10,20 @@ bash build.sh
 cd ..
 
 # Deploy app
-sudo rm -dr /var/www/$USER/*
-sudo cp -dr server/* /var/www/$USER/
+rm -dr /var/www/$USER/*
+cp -dr server/* /var/www/$USER/
 
 #cd back into scripts folder
 cd scripts
 
+#WSGI Config
+echo "
+#Auto-generated WSGI configuration
+import sys
+sys.path.insert(0, '/var/www/$USER/')
+sys.path.insert(0, '/var/www/$USER/env/lib/python3.6/site-packages')
+from vagabond import app as application
+" > /var/www/$USER/wsgi.py 
+
+sudo service apache2 restart
 echo "Application has been deployed. Please restart apache if needed." 
