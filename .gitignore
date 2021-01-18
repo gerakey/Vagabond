@@ -1,1 +1,3 @@
 *.pyc
+*.eslintcache
+server/vagabond/static/*
