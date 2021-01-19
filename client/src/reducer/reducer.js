@@ -10,15 +10,23 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     if (action.type === 'THROW_ERROR') {
-        return {
+        const newState = {...state}
+	newState.error =  {
             visible: true,
             title: action.title,
             message: action.message
         };
+        return newState;
     } else if (action.type === 'HIDE_ERROR') {
-        return initialState;
+	const newState = {...state}
+        newState.error = {
+	    visible: false,
+            title: '',
+            message: ''
+	};
+        return newState;
     }
-}
+};
 
 const throwError = (title, message) => {
     return {
@@ -26,13 +34,13 @@ const throwError = (title, message) => {
         title: title,
         message: message
     };
-}
+};
 
 const hideError = () => {
     return {
         type: 'HIDE_ERROR'
     };
-}
+};
 
 const store = createStore(reducer);
 
