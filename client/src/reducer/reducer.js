@@ -1,7 +1,7 @@
 import { createStore } from 'redux';
 
 const initialState = {
-    error: {
+    notification: {
         visible: false,
         title: '',
         message: ''
@@ -9,39 +9,39 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-    if (action.type === 'THROW_ERROR') {
-        const newState = {...state}
-	newState.error =  {
+    if (action.type === 'CREATE_NOTIFICATION') {
+        const newState = { ...state }
+        newState.notification = {
             visible: true,
             title: action.title,
             message: action.message
         };
         return newState;
-    } else if (action.type === 'HIDE_ERROR') {
-	const newState = {...state}
-        newState.error = {
-	    visible: false,
+    } else if (action.type === 'HIDE_NOTIFICATION') {
+        const newState = { ...state }
+        newState.notification = {
+            visible: false,
             title: '',
             message: ''
-	};
+        };
         return newState;
     }
 };
 
-const throwError = (title, message) => {
+const createNotification = (title, message) => {
     return {
-        type: 'THROW_ERROR',
+        type: 'CREATE_NOTIFICATION',
         title: title,
         message: message
     };
 };
 
-const hideError = () => {
+const hideNotification = () => {
     return {
-        type: 'HIDE_ERROR'
+        type: 'HIDE_NOTIFICATION'
     };
 };
 
 const store = createStore(reducer);
 
-export { store, throwError, hideError }
+export { store, initialState, createNotification, hideNotification }
