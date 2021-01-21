@@ -6,6 +6,26 @@
 #Build client first...
 bash build.sh
 
+#Auto generated vagabond config
+echo "
+VAGABOND_CONFIG = {
+    'mysql_server': '127.0.0.1',
+    'mysql_user': '$USER',
+    'mysql_password': 'password',
+    'mysql_port': '3306',
+    'mysql_database': '$USER'
+}
+" > ../server/vagabond/config.py
+
+#WSGI Config
+echo "
+#Auto-generated WSGI configuration
+import sys
+sys.path.insert(0, '/var/www/$USER/')
+sys.path.insert(0, '/var/www/$USER/env/lib/python3.8/site-packages')
+from vagabond import app as application
+" > ../server/wsgi.py
+
 #cd into root directory
 cd ..
 
@@ -15,15 +35,6 @@ cp -dr server/* /var/www/$USER/
 
 #cd back into scripts folder
 cd scripts
-
-#WSGI Config
-echo "
-#Auto-generated WSGI configuration
-import sys
-sys.path.insert(0, '/var/www/$USER/')
-sys.path.insert(0, '/var/www/$USER/env/lib/python3.8/site-packages')
-from vagabond import app as application
-" > /var/www/$USER/wsgi.py 
 
 sudo service apache2 restart
 echo "Application has been deployed. Please restart apache if needed." 
