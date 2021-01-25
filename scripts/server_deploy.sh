@@ -2,10 +2,6 @@
 #REMOTE SERVER! If you run this on your local machine, you're gonna 
 #have a bad time.
 
-
-#Build client first...
-bash build.sh
-
 #Auto generated vagabond config
 echo "
 config = {
