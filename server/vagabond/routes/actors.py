@@ -15,8 +15,9 @@ Returns: ActivityPub actor object
 @app.route('/api/v1/actors/<username>')
 def route_get_actor_by_username(username):
     actor = db.session.query(Actor).filter_by(username=username.lower()).first()
-    return make_response(actor.to_dict(), 200)
-
+    response =  make_response(actor.to_dict(), 200)
+    response.headers['Content-Type'] = 'application/activity+json'
+    return response
 
 
 @app.route('/api/v1/actors/<username>/outbox')
@@ -41,8 +42,9 @@ def route_user_outbox(username):
         'last': f'https://{config["domain"]}/api/v1/actors/{username}/outbox/{max_page}'
     }
 
-    return make_response(output, 200)
-
+    response = make_response(output, 200)
+    response.headers['Content-Type'] = 'application/activity+json'
+    return response
 
 
 #TODO: Proper format for 'published''
@@ -86,8 +88,9 @@ def route_user_outbox_paginated(username, page):
         'orderedItems': orderedItems
     }
 
-    return make_response(output, 200)
-
+    response = make_response(output, 200)
+    response.headers['Content-Type'] = 'application/activity+json'
+    return response
 
 
 @app.route('/api/v1/actors/<username>/inbox', methods=['GET', 'POST'])
@@ -101,6 +104,9 @@ def route_get_actor_inbox(username):
             'id': f'/api/v1/actors/{actor.username}/inbox',
             'type': 'OrderedCollection'
         }
-        return make_response(output, 200)
+        response = make_response(output, 200)
+        response.headers['Content-Type'] = 'application/activity+json'
+        return response
     elif request.method == 'POST':
+        #TODO: Handle incoming POST requesrs in actor inbox.
         return make_response('asdf', 200)

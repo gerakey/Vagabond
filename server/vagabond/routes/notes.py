@@ -19,8 +19,9 @@ def get_note_by_id(id):
         'published': '2021-01-22T11:43:38Z'
     }
 
-    return make_response(output, 200)
-
+    response = make_response(output, 200)
+    response.headers['Content-Type'] = 'application/activity+json'
+    return response
 
 
 @app.route('/api/v1/notes/<int:id>/activity')
@@ -41,4 +42,6 @@ def get_note_activity_by_id(id):
         }
     }
 
-    return make_response(output, 200)
+    response = make_response(output, 200)
+    response.headers['Content-Type'] = 'application/activity+json'
+    return response
