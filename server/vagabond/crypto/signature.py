@@ -1,4 +1,4 @@
-from flask import request, current_app, make_response
+from flask import request, make_response
 
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
@@ -16,7 +16,6 @@ from vagabond.__main__ import app
 
 #TODO: Standard error function for entire project
 def error(message, code=400):
-    app.logger.error(message)
     return make_response(message, code)
 
 """
@@ -87,8 +86,6 @@ a valid RSA public key object
 """
 def get_public_key(key_id, iteration=0, original_key_id=None):
 
-    app.logger.error(f'Attempting to get key with id {key_id}')
-
     # prevent stack overflow
     if iteration > 2: return None
 
@@ -110,7 +107,6 @@ def get_public_key(key_id, iteration=0, original_key_id=None):
                 break
 
         if alt_key_url == None:
-            app.logger.error('Alternate key could not be found. Returning  None')
             return None
 
         else:
@@ -145,7 +141,6 @@ def get_public_key(key_id, iteration=0, original_key_id=None):
 
     #Something has gone horribly wrong
     else:
-        app.error.log('Something has gone horribly wrong')
         return None
 
 
@@ -177,11 +172,8 @@ def require_signature(f):
         if str(public_key) == 'None':
             return error(f'Could not get public key. Key id: {key_id}', 400)
 
-        app.logger.error(f'Public key has been located...')
-
         try:
             pkcs1_15.new(public_key).verify(digest, decoded_signature)
-            app.logger.error('2')
         except:
             return error(f"""
             
@@ -192,40 +184,13 @@ def require_signature(f):
             Decoded signature: {decoded_signature}
             
             """, 400)
-            app.logger.error('3')
-
-        app.logger.error('4')
 
         body_digest = b64encode(SHA256.new(request.get_data()).digest())
 
-        app.logger.error('5')
-
         header_digest = bytes(request.headers.get('Digest').replace('SHA-256=', ''), 'utf-8')
 
-        app.logger.error('6')
-
         if body_digest != header_digest:
-            j = request.get_data()
-            app.logger.error(f"""
-            
-                Header and body digests don't match. :(
-
-                Header digest: {header_digest}
-
-                Digest of message body: {body_digest}
-
-                Message body: {j}
-
-            """)
             return error('Body digest does not match header digest')
-
-            app.logger.error('7')
-
-        app.logger.error('8')
-
-        app.logger.error(f'Header Digest: {header_digest}')
-        app.logger.error(f'Body digest: {body_digest}')
-
 
         return f(*args, **kwargs)
 
