@@ -7,12 +7,8 @@ from Crypto.Signature import pkcs1_15
 
 from base64 import b64decode, b64encode
 
-import requests
-
-from bs4 import BeautifulSoup
-
 from vagabond.__main__ import app
-
+from vagabond.util import resolve_actor
 
 #TODO: Standard error function for entire project
 def error(message, code=400):
@@ -80,68 +76,24 @@ def construct_signing_string(headers):
 
 
 """
-Takes the "keyId" field of a request and does
-whatever is necessary to resolve it into
-a valid RSA public key object
+Takes the "keyId" field of a request and 
+uses resolve-actor to fetch the public key
+of the specified actor.
 """
-def get_public_key(key_id, iteration=0, original_key_id=None):
+def get_public_key(key_id):
 
-    # prevent stack overflow
-    if iteration > 2: return None
+    actor = resolve_actor(key_id)
 
-    # Used for recursive calls
-    if original_key_id == None: original_key_id = key_id
+    if not actor or not actor.get('publicKey'): return error('An error occurred while attempting to fetch the public key of the inbound actor.', 400)
+    public_key_wrapper = actor.get('publicKey')
+    if public_key_wrapper.get('id') != key_id: return error('Keys don\'t match', 400)
+    public_key_string = public_key_wrapper.get('publicKeyPem')
 
-    response = requests.get(key_id)
+    if not public_key_string: return error('Public key not found.')
 
-    # If we get an HTML document, we need to
-    # attempt to locate an alternate link. 
-    if response.headers['Content-Type'].find('text/html') >= 0:
-        soup = BeautifulSoup(response.text)
-        links = soup.find_all('link')
-        alt_key_url = None
-        for link in links:
+    public_key =  RSA.importKey(bytes(public_key_string, 'utf-8'))
 
-            if 'alternate' in link.get('rel') and link.get('type') == 'application/activity+json':
-                alt_key_url = link.get('href')
-                break
-
-        if alt_key_url == None:
-            return None
-
-        else:
-            # This is for Mastodon compatability.
-            # Mastodon isn't ActivityPub compliant! >:(
-            with_json =  get_public_key(alt_key_url + '.json', iteration=iteration+1, original_key_id=original_key_id)
-
-
-            # For some reason, comparing an RSA key to None throws an error.
-            # This is the next best option. 
-            if str(with_json) != 'None':
-                return with_json
-            else:
-                without_json =  get_public_key(alt_key_url, iteration=iteration+1, original_key_id=original_key_id)
-                return without_json
-
-    # If we find the right content type on the first try,
-    # great!
-    elif response.headers['Content-Type'].find('application/activity+json') >= 0:
-        json = response.json()
-        if not json or not json.get('publicKey'): return error('An error occurred while attempting to fetch the public key of the inbound actor.', 400)
-        public_key_wrapper = json.get('publicKey')
-        if public_key_wrapper.get('id') != original_key_id: return error('Keys don\'t match', 400)
-        public_key_string = public_key_wrapper.get('publicKeyPem')
-
-        if not public_key_string: return error('Public key not found.')
-
-        public_key =  RSA.importKey(bytes(public_key_string, 'utf-8'))
-
-        return public_key
-
-
-    #Something has gone horribly wrong
-    else:
-        return None
+    return public_key
 
 
 
