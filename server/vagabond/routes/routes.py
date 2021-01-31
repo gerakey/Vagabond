@@ -2,7 +2,7 @@ from math import ceil
 
 from datetime import datetime
 
-from flask import make_response, request, jsonify
+from flask import make_response, request, jsonify, session
 
 from vagabond.__main__ import app, db
 from vagabond.models import User, Note, Actor
@@ -22,6 +22,40 @@ from vagabond.crypto import require_signature
 
 def error(message, code=400):
     return make_response(message, code)
+
+
+def require_args_json(required_args):
+    def decorator(f):
+        def wrapper(*args, **kwargs):
+            json = request.get_json()
+            for required in required_args:
+                if json.get(required) == None:
+                    return error('One more more required arugments was not provided.', 400)
+            return f(*args, **kwargs)
+        wrapper.__name__ = f.__name__
+        return wrapper
+    return decorator
+
+
+
+def require_signin(f):
+    def wrapper(*args, **kwargs):
+        
+        if 'uid' not in session:
+            return error('You must be signed in to perform this operation.')
+        else:
+            user = db.session.query(User).get(session['uid'])
+            if not user: return error('Invalid session.')
+            return f(user=user, *args, **kwargs)
+
+    wrapper.__name__ = f.__name__
+    return wrapper
+
+
+
+@app.errorhandler(404)
+def route_error_404(e):
+    return app.send_static_file('index.html')
 
 
 
