@@ -10,6 +10,17 @@ class Actor(db.Model):
     user = db.relationship('User')
     notes = db.relationship('Note')
 
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('user_id') != None:
+            self.user_id = kwargs.get('user_id')
+        elif kwargs.get('user') != None:
+            self.user_id = user.id
+        else:
+            raise Exception('Instantiating an Actor requires either a user object or user id. ')
+
+        if kwargs.get('username') != None:
+            self.username = kwargs.get('username')
+
     def to_dict(self):
 
         api_url = config['api_url']
