@@ -55,5 +55,4 @@ def format_date():
 
     today = datetime.now()
     fd = today.strftime(xsd)
-
     return fd
