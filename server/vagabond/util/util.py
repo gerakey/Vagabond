@@ -1,6 +1,7 @@
 import requests
 
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 def resolve_actor(url, iteration=0, original_url = None):
     # prevent stack overflow
@@ -48,3 +49,11 @@ def resolve_actor(url, iteration=0, original_url = None):
     #Something has gone horribly wrong
     else:
         return None
+
+def format_date():
+    xsd = '%Y-%m-%dT%H:%M:%SZ'
+
+    today = datetime.now()
+    fd = today.strftime(xsd)
+
+    return fd
