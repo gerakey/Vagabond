@@ -7,7 +7,7 @@ from flask import make_response, request, jsonify, session
 from vagabond.__main__ import app, db
 from vagabond.models import User, Note, Actor
 from vagabond.config import config as config
-from vagabond.crypto import require_signature
+from vagabond.crypto import require_signature, signed_request
 
 
 
@@ -22,6 +22,7 @@ from vagabond.crypto import require_signature
 
 def error(message, code=400):
     return make_response(message, code)
+
 
 
 def require_args_json(required_args):
@@ -61,7 +62,7 @@ def route_error_404(e):
 
 # Serves the react app
 @app.route('/')
-def index():
+def route_index():
     return app.send_static_file('index.html')
 
 

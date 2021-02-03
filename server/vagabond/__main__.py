@@ -4,6 +4,8 @@ from flask_limiter import Limiter
 from flask_cors import CORS
 from vagabond.config import config
 
+VERSION = '0.0.1'
+
 app = Flask(__name__, static_url_path='/')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{config['mysql_user']}:{config['mysql_password']}@{config['mysql_server']}:{config['mysql_port']}/{config['mysql_database']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
