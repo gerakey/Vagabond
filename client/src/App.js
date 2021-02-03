@@ -1,25 +1,29 @@
 
-import './App.css';
 import Routes from './components/navigation/Routes.js';
 import Navigation from './components/navigation/Navigation.js';
-import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router } from 'react-router-dom';
 import NotificationModal from './components/NotificationModal.js';
+import './css/App.css';
 
 const App = () => {
 
-  const containerStyle = {
-    marginTop: '15px'
-  };
 
   return (
     <>
-      <NotificationModal/>
+      <NotificationModal />
       <Router>
         <Navigation />
-        <Container style={containerStyle}>
-          <Routes />
-        </Container>
+        <div id="container-root">
+          <div id="sidebar-left">
+            Left sidebar (compose new note)
+          </div>
+          <div id="container-center">
+            <Routes />
+          </div>
+          <div id="sidebar-right">
+            Right sidebar (people you follow)
+          </div>
+        </div>
       </Router>
     </>
   );
