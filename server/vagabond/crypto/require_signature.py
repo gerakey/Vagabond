@@ -4,7 +4,6 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 
-
 from base64 import b64decode, b64encode
 
 from vagabond.__main__ import app
@@ -129,11 +128,11 @@ def require_signature(f):
         except:
             return error(f"""
             
-            Signing string: {signing_string}
+            Signing string: {signing_string} <br><br>
             
-            Signature: {signature}
+            Signature: {signature} <br><br>
 
-            Decoded signature: {decoded_signature}
+            Decoded signature: {decoded_signature} <br><br>
             
             """, 400)
 
