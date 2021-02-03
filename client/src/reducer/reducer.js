@@ -5,6 +5,9 @@ const initialState = {
         visible: false,
         title: '',
         message: ''
+    },
+    userData: {
+        signedIn: false
     }
 };
 
@@ -25,6 +28,8 @@ const reducer = (state = initialState, action) => {
             message: ''
         };
         return newState;
+    } else if (action.type === '') {
+        //TODO: Log in / log out
     }
 };
 
