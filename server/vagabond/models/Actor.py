@@ -1,5 +1,6 @@
 from vagabond.__main__ import db
 from vagabond.config import config
+from Crypto.PublicKey import RSA
 
 class Actor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,6 +21,11 @@ class Actor(db.Model):
 
         if kwargs.get('username') != None:
             self.username = kwargs.get('username')
+        
+        key = RSA.generate(2048)
+        private_key = key.export_key()
+        public_key = key.public_key().export_key()
+
 
     def to_dict(self):
 
