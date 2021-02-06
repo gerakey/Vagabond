@@ -6,7 +6,7 @@ const initialState = {
         title: '',
         message: ''
     },
-    userData: {
+    session: {
         signedIn: false
     }
 };
@@ -28,10 +28,15 @@ const reducer = (state = initialState, action) => {
             message: ''
         };
         return newState;
-    } else if (action.type === '') {
-        //TODO: Log in / log out
+    } else if (action.type === 'SET_SESSION') {
+        return { ...state, session: action.session}
+    } else {
+        return state;
     }
 };
+
+const store = createStore(reducer, initialState);
+store.getState();
 
 const createNotification = (title, message) => {
     return {
@@ -47,6 +52,16 @@ const hideNotification = () => {
     };
 };
 
-const store = createStore(reducer);
+const handleError = (err) => {
+    if(err.response) {
+        store.dispatch(createNotification(`Error: ${err.response.status}`, err.response.data));
+    } else {
+        store.dispatch(createNotification('Error', 'Unknown error.'));
+        console.log(err);
+    }
+    
+}
 
-export { store, initialState, createNotification, hideNotification }
+
+
+export { store, initialState, createNotification, hideNotification, handleError }

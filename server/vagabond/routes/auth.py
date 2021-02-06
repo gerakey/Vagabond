@@ -1,11 +1,11 @@
 from flask import make_response, request, session
 
+import bcrypt
+
 from vagabond.__main__ import app, db, limiter
 from vagabond.models import User, Actor
 from vagabond.routes import error
 from vagabond.routes import require_args_json, require_signin
-
-import bcrypt
 
 @app.route('/api/v1/signup', methods=['POST'])
 #@limiter.limit('2 per day')
@@ -32,7 +32,7 @@ def route_signup():
     db.session.add(new_user)
     db.session.flush()
 
-    new_actor = Actor(user_id=new_user.id, username=actor_name)
+    new_actor = Actor(actor_name, user_id=new_user.id)
     db.session.add(new_actor)
 
     db.session.commit()
@@ -58,7 +58,7 @@ def route_signin():
 
     user = db.session.query(User).filter(db.func.lower(User.username) == db.func.lower(username)).first()
 
-    if user == None:
+    if user is None:
         return error(err_msg)
     
     if not bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user.password_hash, 'utf-8')):
@@ -75,4 +75,11 @@ def route_signin():
 @require_signin
 def route_signout(user):
     session.clear()
+    return make_response('', 200)
+
+
+
+@app.route('/api/v1/session')
+@require_signin
+def route_session(user):
     return make_response('', 200)

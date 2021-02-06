@@ -4,27 +4,27 @@ from Crypto.PublicKey import RSA
 
 class Actor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    public_key = db.Column(db.Text(16639)) #PEM format
-    private_key = db.Column(db.Text(16639)) #PEM format
     username = db.Column(db.String(32), nullable=False)
+    public_key = db.Column(db.Text(16639))
+    private_key = db.Column(db.Text(16639))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User')
     notes = db.relationship('Note')
 
-    def __init__(self, *args, **kwargs):
-        if kwargs.get('user_id') != None:
-            self.user_id = kwargs.get('user_id')
-        elif kwargs.get('user') != None:
+    def __init__(self, username, user=None, user_id=None):
+
+        self.username = username
+
+        if user_id is not None:
+            self.user_id = user_id
+        elif user is not None:
             self.user_id = user.id
         else:
             raise Exception('Instantiating an Actor requires either a user object or user id. ')
-
-        if kwargs.get('username') != None:
-            self.username = kwargs.get('username')
         
-        key = RSA.generate(2048)
-        private_key = key.export_key()
-        public_key = key.public_key().export_key()
+        key = RSA.generate(4096)
+        self.private_key = key.export_key()
+        self.public_key = key.publickey().export_key()
 
 
     def to_dict(self):
