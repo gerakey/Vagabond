@@ -7,6 +7,17 @@ from vagabond.models import User, Actor
 from vagabond.routes import error
 from vagabond.routes import require_args_json, require_signin
 
+
+def get_session_data(user):
+    output = {
+        'actors': []
+    }
+    for actor in user.actors:
+        output['actors'].append(actor.to_dict())
+
+    return output
+
+
 @app.route('/api/v1/signup', methods=['POST'])
 #@limiter.limit('2 per day')
 @require_args_json(['username', 'password', 'passwordConfirm', 'actorName'])
@@ -18,11 +29,11 @@ def route_signup():
     actor_name = str(json.get('actorName'))
 
     existing_user = db.session.query(User).filter(db.func.lower(User.username) == db.func.lower(username)).first()
-    if existing_user != None:
+    if existing_user is not None:
         return error('That username is not available.', 400)
 
     existing_actor = db.session.query(Actor).filter(db.func.lower(Actor.username) == db.func.lower(actor_name)).first()
-    if existing_actor != None:
+    if existing_actor is not None:
         return error('That actor name is not available.', 400)
 
     if password != password_confirm:
@@ -39,7 +50,7 @@ def route_signup():
 
     session['uid'] = new_user.id
 
-    return make_response('', 201)
+    return make_response(get_session_data(new_user), 201)
 
 
 
@@ -66,7 +77,7 @@ def route_signin():
 
     session['uid'] = user.id
 
-    return make_response('', 200)
+    return make_response(get_session_data(user), 200)
 
 
 
@@ -82,4 +93,4 @@ def route_signout(user):
 @app.route('/api/v1/session')
 @require_signin
 def route_session(user):
-    return make_response('', 200)
+    return make_response(get_session_data(user), 200)
