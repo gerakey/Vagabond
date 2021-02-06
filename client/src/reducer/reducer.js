@@ -7,7 +7,8 @@ const initialState = {
         message: ''
     },
     session: {
-        signedIn: false
+        signedIn: false,
+        actors: []
     }
 };
 
@@ -29,6 +30,7 @@ const reducer = (state = initialState, action) => {
         };
         return newState;
     } else if (action.type === 'SET_SESSION') {
+        
         return { ...state, session: action.session}
     } else {
         return state;

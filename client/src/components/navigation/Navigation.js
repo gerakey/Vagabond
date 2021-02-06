@@ -34,7 +34,7 @@ const Navigation = () => {
     }
 
     return (
-        <div class="vagabond-navbar">
+        <div className="vagabond-navbar">
             <Link to="/" title="Home">
                 <LogoHome />
             </Link>
