@@ -3,25 +3,39 @@
 #root {
   display: flex;
   flex-direction: column;
+  font-family: "Kumbh Sans", sans-serif;
 }
 
 div.vagabond-navbar {
   display: flex;
+  flex-direction: row;
   order: 1;
-  color: darkgray;
-  background-color: black;
-  height: 64px;
+  background-color: #363636;
+  height: 90px;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
-div.vagabond-navbar a {
+div.vagabond-navbar #vagabondTitle {
+  font-size: 45px;
+  font-weight: bold;
+  text-decoration: none;
+  text-decoration-style: none;
+}
+div.vagabond-navbar #iconsBar {
+  margin-right: 30px;
+}
+div.vagabond-navbar .a {
   flex: 1;
   margin: 10px;
   padding: 10px;
   max-width: 24px;
-  color: currentColor;
+  color: white;
+  transition: all 0.5s ease-in-out;
 }
-div.vagabond-navbar a:hover {
-  color: red;
+div.vagabond-navbar .a:hover {
+  color: #339CFE;
+  transform: scale(1.1);
 }
 
 #container-root {
@@ -50,7 +64,7 @@ p {
 }
 
 /*Extra small, small, and medium */
-@media only screen and (min-width: 0px) and (max-width: 991px) {
+@media only screen and (min-width: xs 0) and (max-width: lg 992px-1) {
   #root {
     display: block;
   }
@@ -83,5 +97,8 @@ p {
 /*Minimum screen size of medium*/
 /*Minimum screen size of large*/
 /*Minimum screen size of extra large*/
+div.vagabond-test {
+  width: xl;
+}
 
-/*# sourceMappingURL=App.css.map */
+/*# sourceMappingURL=vagabond.css.map */

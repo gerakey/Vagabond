@@ -25,31 +25,40 @@ const Navigation = () => {
 
     return (
         <div class="vagabond-navbar">
+            
             <Link to="/" title="Home">
-                <LogoHome />
+                <div id="vagabondTitle">Vagabond</div>
             </Link>
-            {
-                !userData.signedIn &&
-                <Link to="/signin" title="Sign in">
-                    <SignIn />
+            
+            <div id="iconsBar">
+                <Link to="/" title="Home">
+                    <LogoHome/>
                 </Link>
-            }
-            {
-                userData.signedIn &&
-                <Link to="/signout" title="Sign out">
-                    <SignOut />
-                </Link>
-            }
-            <Link to="/actors" title="All actors">
-                <LogoUsers />
-            </Link>
-            <Link to="/compose" title="Compose Note">
-                <Feather />
-            </Link>
-            <Link to="/about" title="About">
-                <Info />
-            </Link>
 
+
+                {
+                   !userData.signedIn &&
+                  <Link to="/signin" title="Sign in">
+                      <SignIn/>
+                  </Link>
+               }
+                {
+                    userData.signedIn &&
+                    <Link to="/signout" title="Sign out">
+                        <SignOut/>
+                    </Link>
+                }
+
+                <Link to="/actors" title="All actors">
+                    <LogoUsers/>
+                </Link>
+                <Link to="/compose" title="Compose Note">
+                    <Feather/>
+                </Link>
+                <Link to="/about" title="About">
+                    <Info/>
+                </Link>
+            </div>
 
 
         </div>
