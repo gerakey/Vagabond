@@ -18,6 +18,7 @@ const SignIn = () => {
         store.subscribe(() => {
             setSession(store.getState().session);
         })
+
     }, []);
 
     const initialValues = {
@@ -28,7 +29,7 @@ const SignIn = () => {
     const onSubmit = (values) => {
         axios.post('/api/v1/signin', formik.values)
             .then((res) => {
-                store.dispatch({ type: 'SET_SESSION', session: { session, signedIn: true, actors: res.data.actors} });
+                store.dispatch({ type: 'SET_SESSION', session: { ...store.getState().session, ...res.data } });
                 history.push('/');
             }).catch(handleError);
     }

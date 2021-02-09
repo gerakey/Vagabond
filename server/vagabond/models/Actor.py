@@ -7,9 +7,9 @@ class Actor(db.Model):
     username = db.Column(db.String(32), nullable=False)
     public_key = db.Column(db.Text(16639))
     private_key = db.Column(db.Text(16639))
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User')
-    notes = db.relationship('Note')
+    user = db.relationship('User', backref='actors', foreign_keys=[user_id])
 
     def __init__(self, username, user=None, user_id=None):
 

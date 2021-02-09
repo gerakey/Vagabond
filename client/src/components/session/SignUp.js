@@ -44,10 +44,12 @@ const SignUp = () => {
     const onSubmit = () => {
         axios.post('/api/v1/signup', formik.values)
             .then((res) => {
-                store.dispatch({type: 'SET_SESSION', session: {...store.getState().session, signedIn: true, actors: res.data.actors}});
-                history.push('/');
+                store.dispatch({type: 'SET_SESSION', session: { ...store.getState().session, ...res.data } });
             })
-            .catch(handleError);
+            .catch(handleError)
+            .finally(() => {
+                history.push('/');
+            });
     }
 
     const formik = useFormik({

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { store, initialState, createNotification, hideNotification } from '../reducer/reducer.js';
+import { store, initialState, hideNotification } from '../reducer/reducer.js';
 import {Modal, Button} from 'react-bootstrap';
 
 const NotificationModal = () => {
