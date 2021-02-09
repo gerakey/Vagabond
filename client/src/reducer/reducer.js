@@ -8,8 +8,9 @@ const initialState = {
     },
     session: {
         signedIn: false,
-        actors: []
-    }
+        actors: [],
+        currentActor: {}
+    },
 };
 
 const reducer = (state = initialState, action) => {

@@ -4,20 +4,20 @@ import Navigation from './components/navigation/Navigation.js';
 import { BrowserRouter as Router } from 'react-router-dom';
 import NotificationModal from './components/NotificationModal.js';
 import './css/App.css';
-import { store, initialState } from './reducer/reducer.js';
-import { useEffect, useState } from 'react';
+import { store } from './reducer/reducer.js';
+import { useEffect } from 'react';
 import axios from 'axios';
+
+import { Container } from 'react-bootstrap';
 
 const App = () => {
 
   useEffect(() => {
     axios.get('/api/v1/session')
       .then((res) => {
-        store.dispatch({ type: 'SET_SESSION', session: { ...store.getState().session, signedIn: true, actors: res.data.actors } });
+        store.dispatch({ type: 'SET_SESSION', session: { ...store.getState().session, ...res.data } });
       })
-      .catch((err) => {
-        //Do nothing
-      });
+      .catch((err) => { });
   }, []);
 
 
@@ -32,7 +32,10 @@ const App = () => {
           </div>
           <div id="container-center">
 
-            <Routes />
+            <Container>
+              <Routes />
+            </Container>
+
 
           </div>
           <div id="sidebar-right">

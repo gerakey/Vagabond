@@ -7,3 +7,4 @@ bcrypt
 pycryptodome
 beautifulsoup4
 requests
+python-dateutil

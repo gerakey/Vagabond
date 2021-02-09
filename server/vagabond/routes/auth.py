@@ -2,18 +2,37 @@ from flask import make_response, request, session
 
 import bcrypt
 
-from vagabond.__main__ import app, db, limiter
+from vagabond.__main__ import app, db
 from vagabond.models import User, Actor
 from vagabond.routes import error
 from vagabond.routes import require_args_json, require_signin
+from vagabond.config import config
 
 
 def get_session_data(user):
+    api_url = config['api_url']
+        
     output = {
-        'actors': []
+        'actors': [],
+        'signedIn': True
     }
+
     for actor in user.actors:
-        output['actors'].append(actor.to_dict())
+        following = []
+
+        appended = {
+            'id': f'{api_url}/actors/{actor.username}',
+            'username': actor.username,
+            'preferredUsername': actor.username,
+            'following': following
+        }
+
+        output['actors'].append(appended)
+
+        if user.primary_actor_id == actor.id:
+            output['currentActor'] = appended
+
+
 
     return output
 
@@ -45,8 +64,13 @@ def route_signup():
 
     new_actor = Actor(actor_name, user_id=new_user.id)
     db.session.add(new_actor)
+    db.session.flush()
+
+    new_user.primary_actor_id = new_actor.id
+
 
     db.session.commit()
+
 
     session['uid'] = new_user.id
 
