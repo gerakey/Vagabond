@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Error404 from '../static/Error404.js';
 import About from '../static/About.js';
 import SignIn from '../session/SignIn.js';
+import Home from '../static/Home/Home.js'
 import SignUp from '../session/SignUp.js';
 import ViewActors from '../session/ViewActors.js';
 import ComposeNote from '../notes/ComposeNote.js';
@@ -25,15 +26,6 @@ const Routes = () => {
         return <p>Test</p>
     }
 
-    const Home = () => {
-        return (
-            <>
-                <h1>Vagabond</h1>
-                <hr />
-                <p>Home, sweet home.</p>
-            </>
-        )
-    }
 
     return (
         <Switch>

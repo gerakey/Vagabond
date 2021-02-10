@@ -37,43 +37,41 @@ const Navigation = () => {
     }
 
     return (
+        
         <div className="vagabond-navbar">
             <Link to="/" title="Home">
-                <LogoHome />
+                <div id="vagabondTitle">Vagabond</div>
             </Link>
-            {
-                !session.signedIn &&
-                <Link to="/signin" title="Sign in">
-                    <SignIn />
+            
+            <div id="iconsBar">
+                <Link to="/" title="Home">
+                    <LogoHome/>
                 </Link>
-            }
-            {
-                session.signedIn &&
-                <Link onClick={signOut} to="#" title="Sign out">
-                    <SignOut />
-                </Link>
-            }
-            {
-                session.signedIn &&
+
+
+                {
+                   !userData.signedIn &&
+                  <Link to="/signin" title="Sign in">
+                      <SignIn/>
+                  </Link>
+               }
+                {
+                    userData.signedIn &&
+                    <Link to="/signout" title="Sign out">
+                        <SignOut/>
+                    </Link>
+                }
+
                 <Link to="/actors" title="All actors">
-                    <LogoUsers />
+                    <LogoUsers/>
                 </Link>
-            }
-
-            {
-                session.signedIn && 
                 <Link to="/compose" title="Compose Note">
-                    <Feather />
+                    <Feather/>
                 </Link>
-            }
-
-            <Link to="/about" title="About">
-                <Info />
-            </Link>
-
-            <Link to="/feed" title="Feed">
-                <Globe />
-            </Link>
+                <Link to="/about" title="About">
+                    <Info/>
+                </Link>
+            </div>
 
         </div>
     );
