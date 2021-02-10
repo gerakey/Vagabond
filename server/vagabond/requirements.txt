@@ -1,7 +1,0 @@
-flask
-flask-sqlalchemy
-flask-limiter
-flask-cors
-mysql-connector-python
-bcrypt
-rsa

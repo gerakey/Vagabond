@@ -11,15 +11,6 @@ from vagabond.crypto import require_signature, signed_request
 
 
 
-# Use this when you need to do debugging.
-#@app.before_request
-#def log_request_info():
-#    app.logger.error('Headers: %s', request.headers)
-#    app.logger.error('Body: %s', request.get_data())
-#    app.logger.error('Full path: %s', request.full_path)
-
-
-
 def error(message, code=400):
     return make_response(message, code)
 
