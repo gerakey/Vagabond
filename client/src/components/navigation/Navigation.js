@@ -50,13 +50,13 @@ const Navigation = () => {
 
 
                 {
-                   !userData.signedIn &&
+                   !session.signedIn &&
                   <Link to="/signin" title="Sign in">
                       <SignIn/>
                   </Link>
                }
                 {
-                    userData.signedIn &&
+                    session.signedIn &&
                     <Link to="/signout" title="Sign out">
                         <SignOut/>
                     </Link>
