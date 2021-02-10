@@ -1,11 +1,41 @@
 from flask import make_response, request, session
 
-from vagabond.__main__ import app, db, limiter
+import bcrypt
+
+from vagabond.__main__ import app, db
 from vagabond.models import User, Actor
 from vagabond.routes import error
 from vagabond.routes import require_args_json, require_signin
+from vagabond.config import config
 
-import bcrypt
+
+def get_session_data(user):
+    api_url = config['api_url']
+        
+    output = {
+        'actors': [],
+        'signedIn': True
+    }
+
+    for actor in user.actors:
+        following = []
+
+        appended = {
+            'id': f'{api_url}/actors/{actor.username}',
+            'username': actor.username,
+            'preferredUsername': actor.username,
+            'following': following
+        }
+
+        output['actors'].append(appended)
+
+        if user.primary_actor_id == actor.id:
+            output['currentActor'] = appended
+
+
+
+    return output
+
 
 @app.route('/api/v1/signup', methods=['POST'])
 #@limiter.limit('2 per day')
@@ -18,11 +48,11 @@ def route_signup():
     actor_name = str(json.get('actorName'))
 
     existing_user = db.session.query(User).filter(db.func.lower(User.username) == db.func.lower(username)).first()
-    if existing_user != None:
+    if existing_user is not None:
         return error('That username is not available.', 400)
 
     existing_actor = db.session.query(Actor).filter(db.func.lower(Actor.username) == db.func.lower(actor_name)).first()
-    if existing_actor != None:
+    if existing_actor is not None:
         return error('That actor name is not available.', 400)
 
     if password != password_confirm:
@@ -32,14 +62,19 @@ def route_signup():
     db.session.add(new_user)
     db.session.flush()
 
-    new_actor = Actor(user_id=new_user.id, username=actor_name)
+    new_actor = Actor(actor_name, user_id=new_user.id)
     db.session.add(new_actor)
+    db.session.flush()
+
+    new_user.primary_actor_id = new_actor.id
+
 
     db.session.commit()
 
+
     session['uid'] = new_user.id
 
-    return make_response('', 201)
+    return make_response(get_session_data(new_user), 201)
 
 
 
@@ -58,7 +93,7 @@ def route_signin():
 
     user = db.session.query(User).filter(db.func.lower(User.username) == db.func.lower(username)).first()
 
-    if user == None:
+    if user is None:
         return error(err_msg)
     
     if not bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user.password_hash, 'utf-8')):
@@ -66,7 +101,7 @@ def route_signin():
 
     session['uid'] = user.id
 
-    return make_response('', 200)
+    return make_response(get_session_data(user), 200)
 
 
 
@@ -76,3 +111,10 @@ def route_signin():
 def route_signout(user):
     session.clear()
     return make_response('', 200)
+
+
+
+@app.route('/api/v1/session')
+@require_signin
+def route_session(user):
+    return make_response(get_session_data(user), 200)
