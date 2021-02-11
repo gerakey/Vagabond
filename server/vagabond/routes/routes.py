@@ -1,28 +1,48 @@
-from math import ceil
+'''
+    Handles all of Vagabond's routing and
+    exports numerous decorators useful for routing. 
+'''
+from flask import make_response, request, session
 
-from datetime import datetime
-
-from flask import make_response, request, jsonify, session
+from cerberus import Validator
 
 from vagabond.__main__ import app, db
-from vagabond.models import User, Note, Actor
-from vagabond.config import config as config
-from vagabond.crypto import require_signature, signed_request
+from vagabond.models import User, Actor
+from vagabond.config import config
 
 
 
 def error(message, code=400):
+    '''
+        Standard error function used to
+        give the client a consistent error
+        format. Should be used whenever an error
+        is intentionally returned by the server. 
+    '''
     return make_response(message, code)
 
 
 
-def require_args_json(required_args):
+def validate(schema):
+    '''
+        Decorator.
+
+        Validates JSON POST data according to
+        the python-cerbeus schema provided
+        as an argument. If the data does not
+        match the schema or no POST data is
+        provided, a 400 BAD REQUEST error is
+        thrown.
+    '''
     def decorator(f):
         def wrapper(*args, **kwargs):
-            json = request.get_json()
-            for required in required_args:
-                if json.get(required) == None:
-                    return error('One more more required arugments was not provided.', 400)
+            if not request.get_json():
+                return error('No JSON data provided. Invalid request', 400)
+
+            result = Validator(schema).validate(request.get_json())
+            if not result:
+                return error('Invalid request', 400)
+
             return f(*args, **kwargs)
         wrapper.__name__ = f.__name__
         return wrapper
@@ -31,6 +51,16 @@ def require_args_json(required_args):
 
 
 def require_signin(f):
+    '''
+        Decorator.
+
+        Requires that the incoming request's
+        associated session has the 'uid' variable set
+        to a valid user ID. An associated instance of the
+        vagabond.models.User model is then provided to
+        the subsequent function as a key word argument. 
+
+    '''
     def wrapper(*args, **kwargs):
         
         if 'uid' not in session:

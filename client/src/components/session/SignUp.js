@@ -2,7 +2,7 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
-import { username as usernameRegex, actor as actorRegex } from '../../util/regex.js';
+import { username as usernameRegex, actor as actorRegex, password as passwordRegex } from '../../util/regex.js';
 import axios from 'axios';
 import { handleError, store } from '../../reducer/reducer.js';
 import {useHistory} from 'react-router-dom';
@@ -26,14 +26,12 @@ const SignUp = () => {
 
         password: Yup.string()
             .required('Required')
-            .min(12)
-            .max(255),
+            .matches(passwordRegex),
 
         passwordConfirm: Yup.string()
             .required('Required')
-            .min(12)
-            .max(255)
-            .oneOf([Yup.ref('password')], 'Passwords don\'t match!'),
+            .oneOf([Yup.ref('password')], 'Passwords don\'t match!')
+            .matches(passwordRegex),
 
         actorName: Yup.string()
             .required('Required')
