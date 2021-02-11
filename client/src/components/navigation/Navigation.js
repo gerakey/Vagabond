@@ -44,7 +44,7 @@ const Navigation = () => {
     return (
         <div className="vagabond-navbar" style={{padding: '10px'}}>
             <span className="logoAndTitle">
-                <img src={Logo} width={40} height={30} alt="Vagabond Logo" id="vagabondLogo"/>
+                <img src={Logo} width={40} height={30} alt="Vagabond Logo"/>
                 <div id="vagabondTitle">Vagabond</div>
             </span>
             
