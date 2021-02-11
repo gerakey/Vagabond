@@ -26,12 +26,12 @@ const SignUp = () => {
 
         password: Yup.string()
             .required('Required')
-            .matches(passwordRegex),
+            .matches(passwordRegex, 'Passwords must be between 12 and 255 characters'),
 
         passwordConfirm: Yup.string()
             .required('Required')
             .oneOf([Yup.ref('password')], 'Passwords don\'t match!')
-            .matches(passwordRegex),
+            .matches(passwordRegex, 'Passwords must be between 12 and 255 characters'),
 
         actorName: Yup.string()
             .required('Required')
