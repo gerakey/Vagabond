@@ -1,13 +1,16 @@
+'''
+    Routes pertaining to user authentication
+    and session management.
+'''
 from flask import make_response, request, session
 
 import bcrypt
 
 from vagabond.__main__ import app, db
 from vagabond.models import User, Actor
-from vagabond.routes import error
-from vagabond.routes import require_args_json, require_signin
+from vagabond.routes import error, validate, require_signin
 from vagabond.config import config
-
+from vagabond.regex import ACTOR_NAME, USERNAME, PASSWORD
 
 def get_session_data(user):
     api_url = config['api_url']
@@ -37,15 +40,41 @@ def get_session_data(user):
     return output
 
 
+
+
+
+schema_signup = {
+    'username': {
+        'type': 'string',
+        'required': True,
+        'regex': USERNAME
+    },
+    'password': {
+        'type': 'string',
+        'required': True,
+        'regex': PASSWORD
+    },
+    'passwordConfirm': {
+        'type': 'string',
+        'required': True,
+        'regex': PASSWORD
+    },
+    'actorName': {
+        'type': 'string',
+        'required': True,
+        'regex': ACTOR_NAME
+    }
+}
+
+
+
 @app.route('/api/v1/signup', methods=['POST'])
-#@limiter.limit('2 per day')
-@require_args_json(['username', 'password', 'passwordConfirm', 'actorName'])
+@validate(schema_signup)
 def route_signup():
-    json = request.get_json()
-    username = str(json.get('username')).lower()
-    password = str(json.get('password'))
-    password_confirm = str(json.get('passwordConfirm'))
-    actor_name = str(json.get('actorName'))
+    username = request.get_json().get('username').lower()
+    password = request.get_json().get('password')
+    password_confirm = request.get_json().get('passwordConfirm')
+    actor_name = request.get_json().get('actorName')
 
     existing_user = db.session.query(User).filter(db.func.lower(User.username) == db.func.lower(username)).first()
     if existing_user is not None:
@@ -78,13 +107,28 @@ def route_signup():
 
 
 
+
+
+schema_signin = {
+    'username': {
+        'type': 'string',
+        'required': True,
+        'regex': USERNAME
+    },
+    'password': {
+        'type': 'string',
+        'required': True,
+        'regex': PASSWORD
+    }
+}
+
+
+
 @app.route('/api/v1/signin', methods=['POST'])
-#@limiter.limit('2 per minute')
-@require_args_json(['username', 'password'])
+@validate(schema_signin)
 def route_signin():
-    json = request.get_json()
-    username = str(json.get('username'))
-    password = str(json.get('password'))
+    username = request.get_json().get('username')
+    password = request.get_json().get('password')
 
     if 'uid' in session:
         return error('You are currently signed in. Please sign out before trying to sign in.')
@@ -105,12 +149,15 @@ def route_signin():
 
 
 
+
+
 @app.route('/api/v1/signout', methods=['POST'])
-#@limiter.limit('2 per minute')
 @require_signin
 def route_signout(user):
     session.clear()
     return make_response('', 200)
+
+
 
 
 
