@@ -5,7 +5,7 @@ from flask import make_response, request, session
 from dateutil.parser import parse
 
 from vagabond.__main__ import app, db
-from vagabond.models import Actor, Note
+from vagabond.models import Actor, Note, OutboxObject
 from vagabond.routes import error, require_signin
 from vagabond.config import config
 from vagabond.crypto import require_signature
@@ -21,16 +21,17 @@ def get_outbox(username):
         return error('Actor not found', 404)
 
     items_per_page = 20
-    total_items = db.session.query(Note).filter_by(author_id=actor.id).count()
+    total_items = db.session.query(OutboxObject).filter_by(actor_id=actor.id).count()
     max_page = ceil(total_items / items_per_page)
+    api_url = config['api_url']
 
     output = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': f'https://{config["domain"]}/api/v1/actors/{username}/outbox',
+        'id': f'{api_url}/actors/{username}/outbox',
         'type': 'OrderedCollection',
         'totalItems': total_items,
-        'first': f'https://{config["domain"]}/api/v1/actors/{username}/outbox/1',
-        'last': f'https://{config["domain"]}/api/v1/actors/{username}/outbox/{max_page}'
+        'first': f'{api_url}/actors/{username}/outbox/1',
+        'last': f'{api_url}/actors/{username}/outbox/{max_page}'
     }
 
     response = make_response(output, 200)
@@ -74,9 +75,9 @@ def post_outbox_c2s(actor_name, *args, **kwargs):
     _type = request.get_json().get('type')
     if _type is None:
         return error('Invalid ActivityPub object type')
-    
-    if _type == 'Note':
+    elif _type == 'Note':
         return create_note(actor, user)
+
 
     return error('Invalid ActivityPub object type.');
 
@@ -84,7 +85,8 @@ def post_outbox_c2s(actor_name, *args, **kwargs):
 
 @require_signature
 def post_outbox_s2s(actor_name):
-    pass
+    actor = db.session.query(Actor).filter_by(db.func.lower(actor_name) == db.func.lower(Actor.username)).first()
+
 
 
 '''
@@ -109,21 +111,21 @@ def route_user_outbox(actor_name):
 def route_user_outbox_paginated(actor_name, page):
 
     actor = db.session.query(Actor).filter_by(username=actor_name.lower()).first()
-    notes = db.session.query(Note).filter_by(author_id=actor.id).paginate(page, 20).items
+    outbox_objects = db.session.query(OutboxObject).filter_by(actor_id=actor.id).paginate(page, 20).items
     api_url = config['api_url']
 
     orderedItems = []
 
-    for note in notes:
-        orderedItems.append(note.to_activity())
+    for outbox_object in outbox_objects:
+        orderedItems.append(outbox_object.object.to_activity())
 
     output = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': f'https://{config["domain"]}/api/v1/{actor_name}/outbox/{page}',
-        'partOf': f'https://mastodon.social/actors/{actor_name}/outbox',
+        'id': f'{api_url}/actors/{actor_name}/outbox/{page}',
+        'partOf': f'{api_url}/actors/{actor_name}/outbox',
         'type': 'OrderedCollectionPage',
-        'prev': f'https://mastodon.social/actors/{actor_name}/outbox/{page-1}',
-        'next': f'https://mastodon.social/actors/{actor_name}/outbox/{page+1}',
+        'prev': f'{api_url}/actors/{actor_name}/outbox/{page-1}',
+        'next': f'{api_url}/actors/{actor_name}/outbox/{page+1}',
         'orderedItems': orderedItems
     }
 

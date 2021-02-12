@@ -19,7 +19,7 @@ def get_note_by_id(id):
 @app.route('/api/v1/notes/<int:id>/activity')
 def get_note_activity_by_id(id):
     note = db.session.query(Note).get(id)
-    actor = db.session.query(Actor).get(note.author_id)
+    note.actor
     output = note.to_activity()
 
     response = make_response(output, 200)
@@ -36,7 +36,7 @@ def route_feed():
     for note in notes:
         output.append({
             'content': note.content,
-            'handle': f'@{note.author.username}@{domain}',
+            'handle': f'@{note.actor.username}@{domain}',
             'published': note.published
         })
     return make_response(jsonify(output), 200)

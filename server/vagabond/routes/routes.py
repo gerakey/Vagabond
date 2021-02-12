@@ -12,6 +12,13 @@ from vagabond.config import config
 
 
 
+#@app.before_request
+#def log_request():
+#    app.logger.error("Request Headers %s", request.headers)
+#    app.logger.error("Request Body %s", request.data)
+#    return None
+
+
 def error(message, code=400):
     '''
         Standard error function used to
