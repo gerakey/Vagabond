@@ -19,7 +19,7 @@ class Note(OutboxObject):
         '''
 
         # Accept either ID or actor object
-        if isinstance(actor, int) == False:
+        if isinstance(actor, int) is False:
             actor = actor.id
 
         self.actor_id = actor
