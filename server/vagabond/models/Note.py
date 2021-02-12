@@ -1,30 +1,33 @@
-from datetime import datetime
-
 from vagabond.__main__ import db
 from vagabond.config import config
 from vagabond.util import xsd_datetime
+from vagabond.models import OutboxObject
 
-class Note(db.Model):
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
+class Note(OutboxObject):
+    '''
+        Model implementation of an ActivityPub note
+    '''
+    id = db.Column(db.Integer, db.ForeignKey('outbox_object.id'), primary_key=True)
     content = db.Column(db.String(1024), nullable=False)
-    published = db.Column(db.DateTime, default=datetime.utcnow)
+    outbox_object = db.relationship('OutboxObject', backref=db.backref('object', uselist=False))
 
-    author_id = db.Column(db.Integer, db.ForeignKey('actor.id'), nullable=False)
-    author = db.relationship('Actor')
-
-    def __init__(self, author, content, published):
+    def __init__(self, actor, content, published=None):
         '''
-            Author: Actor object or ID of an actor
+            Actor: Actor object or ID of an actor
             Content: String
-            Published: datetime.datetime
+            Published: datetime.datetime; Default=None
         '''
 
-        if isinstance(author, int) == False:
-            author = author.id
+        # Accept either ID or actor object
+        if isinstance(actor, int) == False:
+            actor = actor.id
 
-        self.author_id = author
+        self.actor_id = actor
         self.content = content
-        self.published = published
+        if published is not None:
+            self.published = published
+
+
 
 
     def to_dict(self):
