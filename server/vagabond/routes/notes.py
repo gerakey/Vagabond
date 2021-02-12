@@ -19,7 +19,7 @@ def get_note_by_id(id):
 @app.route('/api/v1/notes/<int:id>/activity')
 def get_note_activity_by_id(id):
     note = db.session.query(Note).get(id)
-    note.actor
+    actor = note.actor
     output = note.to_activity()
 
     response = make_response(output, 200)
