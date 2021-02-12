@@ -1,11 +1,7 @@
 import { createStore } from 'redux';
 
 const initialState = {
-    notification: {
-        visible: false,
-        title: '',
-        message: ''
-    },
+    notifications: [],
     session: {
         signedIn: false,
         actors: [],
@@ -15,20 +11,17 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     if (action.type === 'CREATE_NOTIFICATION') {
-        const newState = { ...state }
-        newState.notification = {
-            visible: true,
+        const newNotifications = [...state.notifications];
+        newNotifications.push({
             title: action.title,
             message: action.message
-        };
+        });
+        const newState = { ...state, notifications: newNotifications }
         return newState;
     } else if (action.type === 'HIDE_NOTIFICATION') {
-        const newState = { ...state }
-        newState.notification = {
-            visible: false,
-            title: '',
-            message: ''
-        };
+        const newNotifications = [...state.notifications];
+        newNotifications.shift();
+        const newState = { ...state, notifications: newNotifications }
         return newState;
     } else if (action.type === 'SET_SESSION') {
         
