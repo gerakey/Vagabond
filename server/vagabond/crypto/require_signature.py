@@ -8,19 +8,18 @@ from base64 import b64decode, b64encode
 
 from vagabond.__main__ import app
 from vagabond.util import resolve_actor
+from vagabond.routes import error
 
-#TODO: Standard error function for entire project
-def error(message, code=400):
-    return make_response(message, code)
 
-'''
-returns: tuple (key_id, algorithm, headers, signature)
-    key_id: string
-    algorithm: string
-    headers: list
-    signature: string; base64 encoded signature
-'''
+
 def parse_keypairs(raw_signature):
+    '''
+        returns: tuple (key_id, algorithm, headers, signature)
+        key_id: string
+        algorithm: string
+        headers: list
+        signature: string; base64 encoded signature
+    '''
     keypairs = raw_signature.split(',')
     for i in range (0, len(keypairs)): keypairs[i] = keypairs[i].strip()
     key_id = None
@@ -50,11 +49,12 @@ def parse_keypairs(raw_signature):
     return (key_id, algorithm, headers, signature)
 
 
-'''
-Takes a list of headers as present in the HTTP signature header and 
-constructs a signing string 
-'''
+
 def construct_signing_string(headers):
+    '''
+        Takes a list of headers as present in the HTTP signature header and
+        constructs a signing string
+    '''
     output = ''
     for i in range(0, len(headers)):
         header = headers[i]
@@ -73,13 +73,12 @@ def construct_signing_string(headers):
 
 
 
-'''
-Takes the "keyId" field of a request and 
-uses resolve-actor to fetch the public key
-of the specified actor.
-'''
 def get_public_key(key_id):
-
+    '''
+        Takes the "keyId" field of a request and
+        uses resolve-actor to fetch the public key
+        of the specified actor.
+    '''
     actor = resolve_actor(key_id)
 
     if not actor or not actor.get('publicKey'): return error('An error occurred while attempting to fetch the public key of the inbound actor.', 400)
@@ -95,13 +94,12 @@ def get_public_key(key_id):
 
 
 
-'''
-Decoator that requires all post requests have a valid HTTP
-signature according to the RFC standard
-'''
 def require_signature(f):
+    '''
+        Decoator that requires all post requests have a valid HTTP
+        signature according to the RFC standard
+    '''
     def wrapper(*args, **kwargs):
-
 
         if request.method != 'POST':
             return f(*args, **kwargs)
@@ -109,17 +107,26 @@ def require_signature(f):
         if not request.get_json():
             return error('No JSON provided.', 400)
 
-
+        # Both of these are essential to verifying the integrity of the message
         if 'Signature' not in request.headers or 'Digest' not in request.headers:
-            return error('Authentication mechanism is missing or invalid', 400)
+            return error('Authentication mechanism is missing or invalid. HTTP request must include both Signature and Digest headers.', 400)
 
         raw_signature = request.headers['Signature']
-
         (key_id, algorithm, headers, signature) = parse_keypairs(raw_signature)
 
-        if 'digest' not in headers or 'date' not in headers:
+        if key_id is None or algorithm is None or headers is None or signature is None:
             return error('Authentication mechanism is missing or invalid')
 
+        # 'digest' must be present in the list of headers inside of
+        # The Signature HTTP header. If it isn't, an attacker can
+        # fail to provide the digest and perform actions on behalf
+        # of an arbitrary actor.
+        if 'digest' not in headers or 'date' not in headers:
+            return error('Authentication mechanism is missing or invalid: either the "digest" or "date" argument was not included in the "headers" field of the "Signature" HTTP header')
+
+        # The HTTP signatures spec supports more than just SHA-256,
+        # But for simplicity's sake we only support the most common
+        # type.
         if algorithm != 'rsa-sha256':
             return error('Invalid algorithm: only rsa-sha256 is supported.')
 
@@ -137,15 +144,7 @@ def require_signature(f):
         try:
             pkcs1_15.new(public_key).verify(digest, decoded_signature)
         except:
-            return error(f"""
-            
-            Signing string: {signing_string} <br><br>
-            
-            Signature: {signature} <br><br>
-
-            Decoded signature: {decoded_signature} <br><br>
-            
-            """, 400)
+            return error('The integrity of the message could not be verified.', 400)
 
         body_digest = b64encode(SHA256.new(request.get_data()).digest())
 
