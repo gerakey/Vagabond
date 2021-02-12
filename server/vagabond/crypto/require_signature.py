@@ -13,13 +13,13 @@ from vagabond.util import resolve_actor
 def error(message, code=400):
     return make_response(message, code)
 
-"""
+'''
 returns: tuple (key_id, algorithm, headers, signature)
     key_id: string
     algorithm: string
     headers: list
     signature: string; base64 encoded signature
-"""
+'''
 def parse_keypairs(raw_signature):
     keypairs = raw_signature.split(',')
     for i in range (0, len(keypairs)): keypairs[i] = keypairs[i].strip()
@@ -50,10 +50,10 @@ def parse_keypairs(raw_signature):
     return (key_id, algorithm, headers, signature)
 
 
-"""
+'''
 Takes a list of headers as present in the HTTP signature header and 
 constructs a signing string 
-"""
+'''
 def construct_signing_string(headers):
     output = ''
     for i in range(0, len(headers)):
@@ -73,11 +73,11 @@ def construct_signing_string(headers):
 
 
 
-"""
+'''
 Takes the "keyId" field of a request and 
 uses resolve-actor to fetch the public key
 of the specified actor.
-"""
+'''
 def get_public_key(key_id):
 
     actor = resolve_actor(key_id)
@@ -95,10 +95,10 @@ def get_public_key(key_id):
 
 
 
-"""
+'''
 Decoator that requires all post requests have a valid HTTP
 signature according to the RFC standard
-"""
+'''
 def require_signature(f):
     def wrapper(*args, **kwargs):
 
