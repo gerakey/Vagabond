@@ -4,10 +4,10 @@ import {Modal, Button} from 'react-bootstrap';
 
 const NotificationModal = () => {
 
-    const [notificationState, setNotificationState] = useState(initialState.notification);
+    const [notifications, setNotifications] = useState(initialState.notifications);
 
     store.subscribe(() => {
-        setNotificationState(store.getState().notification);
+        setNotifications(store.getState().notifications);
     })
 
     const hide = () => {
@@ -15,11 +15,12 @@ const NotificationModal = () => {
     }
 
     return (
-        <Modal show={notificationState.visible} onHide={hide}>
+
+        <Modal show={notifications.length > 0} onHide={hide}>
             <Modal.Header closeButton>
-                <Modal.Title>{notificationState.title}</Modal.Title>
+                <Modal.Title>{notifications.length > 0 ? notifications[0].title : ''}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{notificationState.message}</Modal.Body>
+            <Modal.Body>{notifications.length > 0 ? notifications[0].message : ''}</Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={hide}>
                     OK
