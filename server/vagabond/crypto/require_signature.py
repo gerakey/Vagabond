@@ -27,7 +27,6 @@ def parse_keypairs(raw_signature):
     algorithm = None
     headers = None
     signature = None
-    header_digest = None
 
     for keypair in keypairs:
         keypair = keypair.strip()
@@ -104,14 +103,26 @@ def require_signature(f):
     def wrapper(*args, **kwargs):
 
 
-        if request.method != 'POST': return f()
+        if request.method != 'POST':
+            return f(*args, **kwargs)
         
-        if not request.get_json(): return error('No JSON provided.', 400)
+        if not request.get_json():
+            return error('No JSON provided.', 400)
 
 
-        if 'Signature' not in request.headers or 'Digest' not in request.headers: return error('Authentication mechanism is missing or invalid', 400)
+        if 'Signature' not in request.headers or 'Digest' not in request.headers:
+            return error('Authentication mechanism is missing or invalid', 400)
+
         raw_signature = request.headers['Signature']
+
         (key_id, algorithm, headers, signature) = parse_keypairs(raw_signature)
+
+        if 'digest' not in headers or 'date' not in headers:
+            return error('Authentication mechanism is missing or invalid')
+
+        if algorithm != 'rsa-sha256':
+            return error('Invalid algorithm: only rsa-sha256 is supported.')
+
         signing_string = construct_signing_string(headers)
 
         digest = SHA256.new(bytes(signing_string, 'utf-8'))
