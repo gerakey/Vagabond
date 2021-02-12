@@ -37,7 +37,7 @@ class Note(OutboxObject):
         return {
             '@context': ['https://www.w3.org/ns/activitystreams'],
             'id': f'{api_url}/notes/{self.id}',
-            'attributedTo': f'{api_url}/actors/{self.author.username}',
+            'attributedTo': f'{api_url}/actors/{self.actor.username}',
             'type': 'Note',
             'content': self.content,
             'to': ['https://www.w3.org/ns/activitystreams#Public'],
@@ -50,7 +50,7 @@ class Note(OutboxObject):
             '@context': 'https://www.w3.org/ns/activitystreams',
             'id': f'https://{config["api_url"]}/notes/{self.id}/activity',
             'type': 'Create',
-            'actor': f'https://{config["api_url"]}/actors/{self.author.username}',
+            'actor': f'https://{config["api_url"]}/actors/{self.actor.username}',
             'published': xsd_datetime(self.published),
             'to': ['https://www.w3.org/ns/activitystreams#Public'],
             'cc': [],
