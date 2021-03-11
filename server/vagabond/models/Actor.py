@@ -7,7 +7,7 @@ from Crypto.PublicKey import RSA
 
 class Actor(APObject):
     id = db.Column(db.Integer, db.ForeignKey('ap_object.id'), primary_key=True)
-    username = db.Column(db.String(32), nullable=False)
+    username = db.Column(db.String(32), unique = True ,nullable=False)
     public_key = db.Column(db.Text(16639))
     private_key = db.Column(db.Text(16639))
 
